@@ -1,4 +1,5 @@
 from PyQt5.QtSql import QSqlDatabase
+from PyQt5.QtWidgets import QInputDialog
 
 from resources.credential import user_name1, password_user, admin_name, password_admin
 
@@ -12,19 +13,3 @@ def DBconnect(isAdmin=False):
     else:
         con.open(user_name1, password_user)
     return con
-
-
-def DBreload(con):
-    con.close()
-    return DBconnect()
-
-
-def DBloadAsAdmin(con):
-
-    con.close()
-    return DBconnect(True)
-
-
-def DBloadAsDefault(con):
-    con.close()
-    return DBconnect(False)

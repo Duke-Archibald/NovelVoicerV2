@@ -29,7 +29,7 @@ class Worker(QThread):
         self.paused = True
 
     def Resume(self):
-        print("resime")
+        print("resume")
         self.paused = False
 
     def run(self):

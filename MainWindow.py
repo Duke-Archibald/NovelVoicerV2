@@ -21,7 +21,6 @@ from resources import credential
 from resources.EditableHeaderView import EditableHeaderView
 from resources.TableColorModel import TableColorModel
 from resources.common import test, last_query, appname
-from resources.database_op import DBloadAsAdmin, DBloadAsDefault
 from resources.worker import Worker
 from ui.MainWindowUI import Ui_MainWindow
 
@@ -80,8 +79,6 @@ class MainWindow(QMainWindow):
         self.ui.menubar.addAction(self.ui.dw_progression.toggleViewAction())
         self.ui.menubar.addAction(self.ui.dw_stats.toggleViewAction())
         self.ui.menubar.addAction(self.ui.dw_info.toggleViewAction())
-        self.ui.actionAdmin.triggered.connect(DBloadAsAdmin)
-        self.ui.actionDefault_user.triggered.connect(DBloadAsDefault)
 
         self.ui.dw_tts.setVisible(not self.is_admin)
         self.ui.dw_stats.setVisible(False)
@@ -375,7 +372,7 @@ class MainWindow(QMainWindow):
                     self,
                     f"{appname} - Error!",
                     "character Error: %s" % self.model_characters.lastError().text(),
-                )
+                    )
             else:
                 infomessagebox.done(0)
                 QMessageBox.information(

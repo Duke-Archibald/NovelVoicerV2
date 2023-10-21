@@ -252,8 +252,6 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1192, 21))
         self.menubar.setObjectName("menubar")
-        self.menureload_as = QtWidgets.QMenu(self.menubar)
-        self.menureload_as.setObjectName("menureload_as")
         MainWindow.setMenuBar(self.menubar)
         self.dw_char_mods = QDockWidgetTEST(MainWindow)
         self.dw_char_mods.setFloating(True)
@@ -397,13 +395,6 @@ class Ui_MainWindow(object):
         self.actionTTS.setObjectName("actionTTS")
         self.actionsdfg = QtWidgets.QAction(MainWindow)
         self.actionsdfg.setObjectName("actionsdfg")
-        self.actionAdmin = QtWidgets.QAction(MainWindow)
-        self.actionAdmin.setObjectName("actionAdmin")
-        self.actionDefault_user = QtWidgets.QAction(MainWindow)
-        self.actionDefault_user.setObjectName("actionDefault_user")
-        self.menureload_as.addAction(self.actionAdmin)
-        self.menureload_as.addAction(self.actionDefault_user)
-        self.menubar.addAction(self.menureload_as.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -447,7 +438,6 @@ class Ui_MainWindow(object):
         self.dw_tts.setWindowTitle(_translate("MainWindow", "Text-To-Speech"))
         self.pb_start_tts.setText(_translate("MainWindow", "Start Text-to-speech convertion"))
         self.label_10.setText(_translate("MainWindow", "google/playht/eleven character numbers stats"))
-        self.menureload_as.setTitle(_translate("MainWindow", "reload as"))
         self.dw_char_mods.setWindowTitle(_translate("MainWindow", "Characters Add/Modification"))
         self.label.setText(_translate("MainWindow", "Character info"))
         self.label_25.setText(_translate("MainWindow", "character name"))
@@ -470,7 +460,5 @@ class Ui_MainWindow(object):
         self.actionStats.setText(_translate("MainWindow", "Stats"))
         self.actionTTS.setText(_translate("MainWindow", "TTS"))
         self.actionsdfg.setText(_translate("MainWindow", "sdfg"))
-        self.actionAdmin.setText(_translate("MainWindow", "Admin"))
-        self.actionDefault_user.setText(_translate("MainWindow", "Default user"))
 from qdockwidgettest import QDockWidgetTEST
 from qtableviewp import QTableViewP

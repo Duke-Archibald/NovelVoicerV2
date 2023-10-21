@@ -22,6 +22,7 @@ from MainWindow import MainWindow
 from resources.common import banned_user, admin_user
 
 if __name__ == "__main__":
+    os.makedirs(r".\temps", exist_ok=True)
     faulthandler.enable()
 
     app = QApplication(sys.argv)
@@ -37,6 +38,7 @@ if __name__ == "__main__":
     comp_user = getpass.getuser()
     comp_name = socket.gethostname()
     user_computer = f"{comp_user}-{comp_name}"
+    print(user_computer)
 
     is_admin = admin_user(con, user_computer)
 

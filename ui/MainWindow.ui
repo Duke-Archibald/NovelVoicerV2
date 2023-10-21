@@ -491,14 +491,6 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menureload_as">
-    <property name="title">
-     <string>reload as</string>
-    </property>
-    <addaction name="actionAdmin"/>
-    <addaction name="actionDefault_user"/>
-   </widget>
-   <addaction name="menureload_as"/>
   </widget>
   <widget class="QDockWidgetTEST" name="dw_char_mods">
    <property name="floating">
@@ -768,16 +760,6 @@
   <action name="actionsdfg">
    <property name="text">
     <string>sdfg</string>
-   </property>
-  </action>
-  <action name="actionAdmin">
-   <property name="text">
-    <string>Admin</string>
-   </property>
-  </action>
-  <action name="actionDefault_user">
-   <property name="text">
-    <string>Default user</string>
    </property>
   </action>
  </widget>
