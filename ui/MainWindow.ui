@@ -253,7 +253,22 @@
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QGridLayout" name="gridLayout_5">
      <item row="0" column="0">
-      <layout class="QGridLayout" name="gl_stats"/>
+      <layout class="QGridLayout" name="gl_stats">
+       <item row="0" column="0">
+        <widget class="QPushButton" name="pb_interactive">
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="cbox_chapter">
+         <property name="text">
+          <string>CheckBox</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>

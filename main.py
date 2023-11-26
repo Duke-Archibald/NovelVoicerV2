@@ -10,6 +10,7 @@ import time
 import pyperclip
 import qdarkstyle
 from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMessageBox
 from qasync import QEventLoop, QApplication
 
 from resources import database_op
@@ -50,6 +51,13 @@ if __name__ == "__main__":
             main.show()
             loop.run_forever()
         else:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("connection error")
+            msg.setInformativeText(f"Available drivers {con.drivers()}")
+            msg.setWindowTitle("error")
+            msg.setDetailedText("you probably need to add postgres V14 \n then go here https://www.pythonguis.com/faq/postgres-pyqt5-windows-driver-not-loaded/ the command hase been pasted in your clip board (you need to be admin)")
+            msg.exec_()
             print("Available drivers", con.drivers())
             print(con.lastError().text())
             print("you probably need to add postgres V14 \n then go here https://www.pythonguis.com/faq/postgres-pyqt5-windows-driver-not-loaded/ the command hase been pasted in your clip board (you need to be admin)")

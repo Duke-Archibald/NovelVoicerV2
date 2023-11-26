@@ -6,8 +6,8 @@ import webbrowser
 
 import pyperclip
 import winsound
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSettings, QSortFilterProxyModel, Qt, pyqtSlot, QPersistentModelIndex
+from PyQt5 import QtWidgets,QtWebEngineWidgets
+from PyQt5.QtCore import QSettings, QSortFilterProxyModel, Qt, pyqtSlot, QPersistentModelIndex, QUrl
 from PyQt5.QtGui import QCloseEvent, QIcon, QColor
 from PyQt5.QtSql import QSqlTableModel, QSqlQuery
 from PyQt5.QtWidgets import QMainWindow, QScrollBar, QAbstractScrollArea, QTableView, QMessageBox, qApp, QColorDialog
@@ -21,6 +21,8 @@ from resources import credential
 from resources.EditableHeaderView import EditableHeaderView
 from resources.TableColorModel import TableColorModel
 from resources.common import test, last_query, appname
+from resources.ploting import interactive_pie
+from resources.stats import plot
 from resources.worker import Worker
 from ui.MainWindowUI import Ui_MainWindow
 
@@ -49,6 +51,9 @@ class MainWindow(QMainWindow):
 
         self.scroll_bar = QScrollBar(self)
         self.ui.tv_lines.setHorizontalScrollBar(self.scroll_bar)
+
+        self.m_output = QtWebEngineWidgets.QWebEngineView()
+        self.ui.gl_stats.addWidget(self.m_output,1,1)
 
         self.credentials = service_account.Credentials.from_service_account_file("resources/"
                                                                                  "novelapp-322716-f629fcd1c568.json")
@@ -117,11 +122,12 @@ class MainWindow(QMainWindow):
         self._proxy = QSortFilterProxyModel(self)
 
         # pie chart setup
-        self.figure = plt.figure()
+        self.figure2 = plt.figure(2)
+        self.figure = plt.figure(1)
         self.canvas = FigureCanvas(self.figure)
         # self.toolbar = NavigationToolbar(self.canvas, self)
         # self.ui.gl_stats.addWidget(self.toolbar)
-        self.ui.gl_stats.addWidget(self.canvas)
+        self.ui.gl_stats.addWidget(self.canvas,1,0)
         # self.make_plot()
         ###########################################################################################
         # novel
@@ -230,7 +236,6 @@ class MainWindow(QMainWindow):
         self.ui.pb_last_query_copy.clicked.connect(self.copy_paste)
         self.ui.pb_status_copy.clicked.connect(self.copy_paste)
         self.ui.pb_user_name_copy.clicked.connect(self.copy_paste)
-        # self.ui
 
         self.ui.cb_novel.activated.connect(self.comboboxChanged)
         self.ui.cb_chapter.activated.connect(self.comboboxChanged)
@@ -255,6 +260,7 @@ class MainWindow(QMainWindow):
         # self.ui.pb_plot_toggle.clicked.connect(self.handle_plot_toggle)
         self.ui.pb_make_todo.clicked.connect(self.pb_characters_clicked)
         self.ui.pb_revert.clicked.connect(self.pb_characters_clicked)
+        self.ui.pb_interactive.clicked.connect(self.interactiveplot)
         # self.ui.pb_test.clicked.connect(self.test_clicked)
 
         self.ui.pb_char_add.clicked.connect(self.add_char)
@@ -326,8 +332,27 @@ class MainWindow(QMainWindow):
     def handle_plot_toggle(self):
         test("handle_plot_toggle")
 
+    def interactiveplot(self):
+        interactive_pie(self.ui.cb_novel.currentText(), self.con, self.m_output)
     def make_plot(self):
         test("make_plot")
+        # self.ui.tb_stats.setSource(QUrl.fromLocalFile("resources/TESTING/ttest.html"))
+
+
+        # plt.figure(2)
+        # self.figure2.set_size_inches(20, 20)
+        # self.draw()
+        # plt.savefig(self.savename, dpi=100)
+        # plt.figure(1)
+        # self.draw()
+        plot(self.figure,
+             self.ui.cbox_chapter,
+             self.con,
+             self.ui.cb_novel,
+             self.chapter_selection,
+             self.is_admin,
+             self.canvas,
+             self.ui.cb_chapter)
 
     def test_clicked(self):
         test("test_clicked")
@@ -604,7 +629,7 @@ class MainWindow(QMainWindow):
                                                        f"{line_character}")
                 self.model_characters.setData(self.model_characters.index(indexmin[0].row(), 5), count,
                                               Qt.EditRole)
-        self.make_plot()
+        # self.make_plot()
         self.complete_called = False
 
     def status_change_chapter(self, Statusstate="complete"):
@@ -912,7 +937,7 @@ class MainWindow(QMainWindow):
             self.status_change_chapter(Statusstate="WIP")
             infomessagebox.done(0)
 
-        self.make_plot()
+        # self.make_plot()
 
     def readSettings(self):
         try:
