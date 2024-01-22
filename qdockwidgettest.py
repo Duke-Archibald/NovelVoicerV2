@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDockWidget
+from PyQt6.QtWidgets import QDockWidget
 
 
 class QDockWidgetTEST(QDockWidget):

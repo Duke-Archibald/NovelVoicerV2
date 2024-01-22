@@ -1,5 +1,5 @@
 import random
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 
 class EditableHeaderView(QtWidgets.QHeaderView):

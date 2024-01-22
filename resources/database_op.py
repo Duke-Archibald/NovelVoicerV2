@@ -1,5 +1,5 @@
-from PyQt5.QtSql import QSqlDatabase
-from PyQt5.QtWidgets import QInputDialog
+from PyQt6.QtSql import QSqlDatabase
+from PyQt6.QtWidgets import QInputDialog
 
 from resources.credential import user_name1, password_user, admin_name, password_admin
 

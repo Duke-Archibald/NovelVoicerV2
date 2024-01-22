@@ -6,21 +6,20 @@ import webbrowser
 
 import pyperclip
 import winsound
-from PyQt5 import QtWidgets,QtWebEngineWidgets
-from PyQt5.QtCore import QSettings, QSortFilterProxyModel, Qt, pyqtSlot, QPersistentModelIndex, QUrl
-from PyQt5.QtGui import QCloseEvent, QIcon, QColor
-from PyQt5.QtSql import QSqlTableModel, QSqlQuery
-from PyQt5.QtWidgets import QMainWindow, QScrollBar, QAbstractScrollArea, QTableView, QMessageBox, qApp, QColorDialog
+from PyQt6 import QtWidgets, QtWebEngineWidgets
+from PyQt6.QtCore import QSettings, QSortFilterProxyModel, Qt, pyqtSlot, QPersistentModelIndex
+from PyQt6.QtGui import QCloseEvent, QColor
+from PyQt6.QtSql import QSqlTableModel, QSqlQuery
+from PyQt6.QtWidgets import QMainWindow, QScrollBar, QAbstractScrollArea, QTableView, QMessageBox, QColorDialog
 from google.cloud import texttospeech
 from google.oauth2 import service_account
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from resources import credential
 from resources.EditableHeaderView import EditableHeaderView
 from resources.TableColorModel import TableColorModel
-from resources.common import test, last_query, appname
+from resources.common import test, last_query, appname, discord1
 from resources.ploting import interactive_pie
 from resources.stats import plot
 from resources.worker import Worker
@@ -33,7 +32,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self, app, usercomputer, DBconnection, is_admin):
         super().__init__()
-
+        self.discord_invite = discord1
         self.app = app
         self.settings = QSettings("NovelApp", "Voice2-0")
 
@@ -53,7 +52,7 @@ class MainWindow(QMainWindow):
         self.ui.tv_lines.setHorizontalScrollBar(self.scroll_bar)
 
         self.m_output = QtWebEngineWidgets.QWebEngineView()
-        self.ui.gl_stats.addWidget(self.m_output,1,1)
+        self.ui.gl_stats.addWidget(self.m_output, 1, 1)
 
         self.credentials = service_account.Credentials.from_service_account_file("resources/"
                                                                                  "novelapp-322716-f629fcd1c568.json")
@@ -127,7 +126,7 @@ class MainWindow(QMainWindow):
         self.canvas = FigureCanvas(self.figure)
         # self.toolbar = NavigationToolbar(self.canvas, self)
         # self.ui.gl_stats.addWidget(self.toolbar)
-        self.ui.gl_stats.addWidget(self.canvas,1,0)
+        self.ui.gl_stats.addWidget(self.canvas, 1, 0)
         # self.make_plot()
         ###########################################################################################
         # novel
@@ -138,15 +137,15 @@ class MainWindow(QMainWindow):
 
         # chapter
         self.model_chapter.setTable("chapters")
-        self.model_chapter.setSort(1, Qt.AscendingOrder)
-        self.model_chapter.setEditStrategy(QSqlTableModel.OnFieldChange)
+        self.model_chapter.setSort(1, Qt.SortOrder.AscendingOrder)
+        self.model_chapter.setEditStrategy(QSqlTableModel.EditStrategy.OnFieldChange)
         self.model_chapter.select()
         self.ui.cb_chapter.setModel(self.model_chapter)
         self.ui.cb_chapter.setModelColumn(2)
 
         # characters
         self.CharHeaderview.textChanged.connect(self.on_text_changed)
-        self.model_characters.setEditStrategy(QSqlTableModel.OnFieldChange)
+        self.model_characters.setEditStrategy(QSqlTableModel.EditStrategy.OnFieldChange)
 
         self.ui.tv_characters.setModel(self._proxy)
         self.ui.tv_characters.setHorizontalHeader(self.CharHeaderview)
@@ -183,7 +182,7 @@ class MainWindow(QMainWindow):
         voiceoptionquery = f"select phtv_gender, phtv_language,phtv_service,phtv_voice_type from play_ht_voices"
         self.lastquery = voiceoptionquery
         query = QSqlQuery(db=self.con)
-        query.exec_(voiceoptionquery)
+        query.exec(voiceoptionquery)
         test("query")
         while query.next():
             self.genders.append(query.value(0))
@@ -200,8 +199,8 @@ class MainWindow(QMainWindow):
         self.ui.cb_char_country.addItems(self.country)
         self.ui.cb_char_service.addItems(self.services)
         self.ui.cb_char_type.addItems(self.type)
-        self.ui.cb_char_country.completer().setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
-        self.ui.cb_char_name.completer().setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+        self.ui.cb_char_country.completer().setCompletionMode(QtWidgets.QCompleter.CompletionMode.PopupCompletion)
+        self.ui.cb_char_name.completer().setCompletionMode(QtWidgets.QCompleter.CompletionMode.PopupCompletion)
 
         self.ui.cb_char_gender.currentTextChanged.connect(self.cb_char_changed)
         self.ui.cb_char_service.currentTextChanged.connect(self.cb_char_changed)
@@ -214,7 +213,7 @@ class MainWindow(QMainWindow):
         self.ui.pb_char_color.clicked.connect(self.colordef)
 
         # lines
-        self.model_lines.setEditStrategy(QSqlTableModel.OnManualSubmit)
+        self.model_lines.setEditStrategy(QSqlTableModel.EditStrategy.OnManualSubmit)
         self.ui.tv_lines.setModel(self.model_lines)
         self.ui.tv_lines.focus_out_signal.connect(lambda: self.workerSave.Pause())
         self.ui.tv_lines.focus_in_signal.connect(lambda: self.workerSave.Resume())
@@ -222,7 +221,7 @@ class MainWindow(QMainWindow):
         self.ui.tv_lines.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         self.ui.tv_lines_split.horizontalHeader().setSectionResizeMode(
             QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
-        self.ui.tv_lines_split.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContentsOnFirstShow)
+        self.ui.tv_lines_split.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContentsOnFirstShow)
 
         # clicked signal connection
         self.ui.tv_characters.selectionModel().selectionChanged.connect(self.tv_characters_clicked)
@@ -241,7 +240,6 @@ class MainWindow(QMainWindow):
         self.ui.cb_chapter.activated.connect(self.comboboxChanged)
 
         self.ui.cb_novel.setCurrentText(self.settings.value("lastNovel"))
-
 
         self.ui.tv_lines.verticalScrollBar().valueChanged.connect(
             lambda index: self.ui.tv_lines_split.verticalScrollBar().setValue(index))
@@ -284,13 +282,13 @@ class MainWindow(QMainWindow):
             'Content-Type': 'application/json'
         }
         baseEndPoint = "https://play.ht/api/v1"
-        text = f"Hi, my name is {self.le_character_name.text()}," \
-               f" and I'm a character from {self.cb_novel.currentText()}."
-        title = f"{self.cb_voice_code.currentText()}"
+        text = f"Hi, my name is {self.ui.le_character_name.text()}," \
+               f" and I'm a character from {self.ui.cb_novel.currentText()}."
+        title = f"{self.ui.cb_voice_code.currentText()}"
         self.filename = f"temps/{title}.wav"
-        if self.cb_playht_voice_model.data(self.cb_playht_voice_model.index(self.cb_name.currentIndex(), 6)) == "gc":
+        if self.ui.cb_playht_voice_model.data(self.ui.cb_playht_voice_model.index(self.ui.cb_name.currentIndex(), 6)) == "gc":
             print("google tts")
-            voice_name = self.cb_voice_code.currentText()
+            voice_name = self.ui.cb_voice_code.currentText()
             if pathlib.Path(self.filename).exists():
                 winsound.PlaySound(self.filename, winsound.SND_FILENAME)
             else:
@@ -334,10 +332,10 @@ class MainWindow(QMainWindow):
 
     def interactiveplot(self):
         interactive_pie(self.ui.cb_novel.currentText(), self.con, self.m_output)
+
     def make_plot(self):
         test("make_plot")
         # self.ui.tb_stats.setSource(QUrl.fromLocalFile("resources/TESTING/ttest.html"))
-
 
         # plt.figure(2)
         # self.figure2.set_size_inches(20, 20)
@@ -369,9 +367,9 @@ class MainWindow(QMainWindow):
         infomessagebox = QMessageBox(self)
         infomessagebox.setWindowTitle(f"{appname} - Add Character")
         infomessagebox.setText(f"Adding {name} to the database")
-        infomessagebox.setStandardButtons(QMessageBox.NoButton)
+        infomessagebox.setStandardButtons(QMessageBox.StandardButton.NoButton)
         infomessagebox.open()
-        qApp.processEvents()
+        self.app.processEvents()
 
         if novel == "" or name == "" or voice == "" or color == "" or importance == "":
             QMessageBox.information(
@@ -397,7 +395,7 @@ class MainWindow(QMainWindow):
                     self,
                     f"{appname} - Error!",
                     "character Error: %s" % self.model_characters.lastError().text(),
-                    )
+                )
             else:
                 infomessagebox.done(0)
                 QMessageBox.information(
@@ -434,7 +432,7 @@ class MainWindow(QMainWindow):
                        f"and character_novel='{self.old_novel}'"
             query = QSqlQuery(db=self.con)
             self.lastquery = prequery
-            query.exec_(prequery)
+            query.exec(prequery)
             self.edit_line_from_char(self.old_name, new_name, new_color, new_voice, self.old_novel)
             self.model_characters.select()
             # self.accept()
@@ -442,7 +440,7 @@ class MainWindow(QMainWindow):
     def edit_line_from_char(self, char_old_name, char_new_name, char_color, char_voice, char_novel):
         service = self.model_playht_voice.data(self.model_playht_voice.index(self.ui.cb_char_name.currentIndex(), 6))
         query = QSqlQuery(db=self.con)
-        query.exec_(
+        query.exec(
             f"update lines set line_character = '{char_new_name}',"
             f"line_voice = '{char_voice}',"
             f"line_voice_sys = '{service}',"
@@ -456,17 +454,17 @@ class MainWindow(QMainWindow):
             if x == 0:
                 print(self._proxy.data(self._proxy.index(indexn.row(), 1)))
                 self.character_name = self._proxy.data(self._proxy.index(indexn.row(), 1),
-                                                       Qt.DisplayRole)
+                                                       Qt.ItemDataRole.DisplayRole)
                 self.character_voice = self._proxy.data(self._proxy.index(indexn.row(), 2),
-                                                        Qt.DisplayRole)
+                                                        Qt.ItemDataRole.DisplayRole)
                 character_novel = self._proxy.data(self._proxy.index(indexn.row(), 3),
-                                                   Qt.DisplayRole)
+                                                   Qt.ItemDataRole.DisplayRole)
                 self.character_color = self._proxy.data(self._proxy.index(indexn.row(), 4),
-                                                        Qt.DisplayRole)
+                                                        Qt.ItemDataRole.DisplayRole)
                 character_importance = self._proxy.data(self._proxy.index(indexn.row(), 6),
-                                                        Qt.DisplayRole)
+                                                        Qt.ItemDataRole.DisplayRole)
                 self.character_service = self._proxy.data(self._proxy.index(indexn.row(), 7),
-                                                          Qt.DisplayRole)
+                                                          Qt.ItemDataRole.DisplayRole)
                 self.ui.l_character_name.setText(self.character_name)
                 self.ui.l_character_name.setStyleSheet(f"background-color: {self.character_color}")
 
@@ -519,7 +517,7 @@ class MainWindow(QMainWindow):
             voiceoptionquery = f"select phtv_gender, phtv_language,phtv_service,phtv_voice_type from play_ht_voices where phtv_value = '{self.old_voice}'"
             self.lastquery = voiceoptionquery
             query = QSqlQuery(db=self.con)
-            query.exec_(voiceoptionquery)
+            query.exec(voiceoptionquery)
             test("query")
             while query.next():
                 print(query.value(0))
@@ -534,14 +532,14 @@ class MainWindow(QMainWindow):
         Hidden = True
         notHidden = False
         self.model_lines.setTable("lines")
-        self.model_lines.setHeaderData(1, Qt.Horizontal, "#")
-        self.model_lines.setHeaderData(3, Qt.Horizontal, "Name")
-        self.model_lines.setHeaderData(4, Qt.Horizontal, "Character Voice")
-        self.model_lines.setHeaderData(7, Qt.Horizontal, "Line Text")
+        self.model_lines.setHeaderData(1, Qt.Orientation.Horizontal, "#")
+        self.model_lines.setHeaderData(3, Qt.Orientation.Horizontal, "Name")
+        self.model_lines.setHeaderData(4, Qt.Orientation.Horizontal, "Character Voice")
+        self.model_lines.setHeaderData(7, Qt.Orientation.Horizontal, "Line Text")
 
         Lfilter = f"line_novel = '{self.ui.cb_novel.currentText()}' AND line_chapter = '{self.chapter_selection}'"
         self.model_lines.setFilter(Lfilter)
-        self.model_lines.setSort(1, Qt.AscendingOrder)
+        self.model_lines.setSort(1, Qt.SortOrder.AscendingOrder)
         self.model_lines.select()
         self.ui.tv_lines.setModel(self.model_lines)
         self.ui.tv_lines.setColumnHidden(0, Hidden)
@@ -557,8 +555,8 @@ class MainWindow(QMainWindow):
         self.ui.tv_lines.setColumnHidden(10, Hidden)
         self.ui.tv_lines.setColumnWidth(3, 100)
         self.ui.tv_lines.setColumnWidth(4, 125)
-        self.ui.tv_lines.setSelectionBehavior(QTableView.SelectRows)
-        self.ui.tv_lines.setSelectionMode(QTableView.MultiSelection)
+        self.ui.tv_lines.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
+        self.ui.tv_lines.setSelectionMode(QTableView.SelectionMode.MultiSelection)
 
         self.ui.tv_lines_split.setModel(self.model_lines)
         self.ui.tv_lines_split.setColumnHidden(0, Hidden)
@@ -574,11 +572,11 @@ class MainWindow(QMainWindow):
         self.ui.tv_lines_split.setColumnHidden(10, Hidden)
         self.ui.tv_lines_split.setColumnWidth(1, 45)
         # self.tv_split_lines.setSelectionBehavior(QTableView.NoSelection)
-        self.ui.tv_lines_split.setSelectionMode(QTableView.NoSelection)
-        self.ui.tv_lines_split.setEditTriggers(QTableView.NoEditTriggers)
+        self.ui.tv_lines_split.setSelectionMode(QTableView.SelectionMode.NoSelection)
+        self.ui.tv_lines_split.setEditTriggers(QTableView.EditTrigger.NoEditTriggers)
 
         if not self.is_admin:
-            self.ui.tv_lines.setEditTriggers(QTableView.NoEditTriggers)
+            self.ui.tv_lines.setEditTriggers(QTableView.EditTrigger.NoEditTriggers)
         self.ui.tv_lines_split.verticalHeader().setVisible(False)
 
     def populate_tv_characters(self):
@@ -586,14 +584,14 @@ class MainWindow(QMainWindow):
         self.model_characters.setTable("characters")
         self.model_characters.setFilter(f"character_novel = '{self.ui.cb_novel.currentText()}'")
         # self.model_characters.setSort(5, Qt.SortOrder.AscendingOrder)
-        self.model_characters.setHeaderData(1, Qt.Horizontal, "Name")
-        self.model_characters.setHeaderData(2, Qt.Horizontal, "Voice Name")
-        self.model_characters.setHeaderData(5, Qt.Horizontal, "usage")
-        self.model_characters.setHeaderData(6, Qt.Horizontal, "importance")
-        self.model_characters.setHeaderData(10, Qt.Horizontal, "voice service")
+        self.model_characters.setHeaderData(1, Qt.Orientation.Horizontal, "Name")
+        self.model_characters.setHeaderData(2, Qt.Orientation.Horizontal, "Voice Name")
+        self.model_characters.setHeaderData(5, Qt.Orientation.Horizontal, "usage")
+        self.model_characters.setHeaderData(6, Qt.Orientation.Horizontal, "importance")
+        self.model_characters.setHeaderData(10, Qt.Orientation.Horizontal, "voice service")
 
         self.model_characters.select()
-        self._proxy.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self._proxy.setFilterCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self._proxy.setSourceModel(self.model_characters)
         self._proxy.sort(5, Qt.SortOrder.DescendingOrder)
         self.ui.tv_characters.setModel(self._proxy)
@@ -603,9 +601,9 @@ class MainWindow(QMainWindow):
         # self.CharHeaderview.setEditable(6, True)
 
         self.ui.tv_characters.setModel(self._proxy)
-        self.ui.tv_characters.setSelectionBehavior(QTableView.SelectRows)
-        self.ui.tv_characters.setSelectionMode(QTableView.SingleSelection)
-        self.ui.tv_characters.setEditTriggers(QTableView.NoEditTriggers)
+        self.ui.tv_characters.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
+        self.ui.tv_characters.setSelectionMode(QTableView.SelectionMode.SingleSelection)
+        self.ui.tv_characters.setEditTriggers(QTableView.EditTrigger.NoEditTriggers)
         self.ui.tv_characters.setColumnHidden(0, True)
         self.ui.tv_characters.setColumnHidden(3, True)
         self.ui.tv_characters.setColumnHidden(4, True)
@@ -618,17 +616,17 @@ class MainWindow(QMainWindow):
                             f"group by line_character")
         self.lastquery = countUpdateQuery
         query = QSqlQuery(db=self.con)
-        query.exec_(countUpdateQuery)
+        query.exec(countUpdateQuery)
         while query.next():
             line_character = query.value(0)
             count = query.value(1)
             if line_character == "to-do" or line_character == "base character":
                 pass
             else:
-                indexmin = self.model_characters.match(self.model_characters.index(0, 1), Qt.DisplayRole,
+                indexmin = self.model_characters.match(self.model_characters.index(0, 1), Qt.ItemDataRole.DisplayRole,
                                                        f"{line_character}")
                 self.model_characters.setData(self.model_characters.index(indexmin[0].row(), 5), count,
-                                              Qt.EditRole)
+                                              Qt.ItemDataRole.EditRole)
         # self.make_plot()
         self.complete_called = False
 
@@ -637,7 +635,7 @@ class MainWindow(QMainWindow):
         self.complete_called = True
         self.model_chapter.setData(self.model_chapter.index(self.ui.cb_chapter.currentIndex(), 3),
                                    f"{Statusstate}",
-                                   Qt.EditRole)
+                                   Qt.ItemDataRole.EditRole)
         self.count_update()
 
     def pb_characters_clicked(self):
@@ -713,34 +711,34 @@ class MainWindow(QMainWindow):
                 if x % 10 == 0:
                     if self.character_name != "":
                         self.model_lines.setData(self.model_lines.index(index.row(), 3), f"{self.character_name}",
-                                                 Qt.EditRole)
+                                                 Qt.ItemDataRole.EditRole)
                     else:
                         self.model_lines.setData(self.model_lines.index(index.row(), 3), f"base character",
-                                                 Qt.EditRole)
+                                                 Qt.ItemDataRole.EditRole)
                     if self.character_voice != "":
                         self.model_lines.setData(self.model_lines.index(index.row(), 4), f"{self.character_voice}",
-                                                 Qt.EditRole)
+                                                 Qt.ItemDataRole.EditRole)
                     else:
                         self.model_lines.setData(self.model_lines.index(index.row(), 4), f"en-AU-Standard-A",
-                                                 Qt.EditRole)
+                                                 Qt.ItemDataRole.EditRole)
                     if self.character_color != "":
                         self.model_lines.setData(self.model_lines.index(index.row(), 8), f"{self.character_color}",
-                                                 Qt.EditRole)
+                                                 Qt.ItemDataRole.EditRole)
                     else:
                         self.model_lines.setData(self.model_lines.index(index.row(), 8), f"#ffffff",
-                                                 Qt.EditRole)
+                                                 Qt.ItemDataRole.EditRole)
                     if self.user_computer != "":
                         self.model_lines.setData(self.model_lines.index(index.row(), 9), f"{self.user_computer}",
-                                                 Qt.EditRole)
+                                                 Qt.ItemDataRole.EditRole)
                     else:
                         self.model_lines.setData(self.model_lines.index(index.row(), 9), f"user_computer",
-                                                 Qt.EditRole)
+                                                 Qt.ItemDataRole.EditRole)
                     if self.character_service != "":
                         self.model_lines.setData(self.model_lines.index(index.row(), 10), f"{self.character_service}",
-                                                 Qt.EditRole)
+                                                 Qt.ItemDataRole.EditRole)
                     else:
                         self.model_lines.setData(self.model_lines.index(index.row(), 10), f"service",
-                                                 Qt.EditRole)
+                                                 Qt.ItemDataRole.EditRole)
 
     def progressionChapter(self, all_count=0, to_do_count=0):  # update progress bar for chapter line completion
         chapterProgressionQuery = (f"select line_character, count(*) "
@@ -750,7 +748,7 @@ class MainWindow(QMainWindow):
                                    f"group by line_character")
         self.lastquery = chapterProgressionQuery
         query = QSqlQuery(db=self.con)
-        query.exec_(chapterProgressionQuery)
+        query.exec(chapterProgressionQuery)
         while query.next():
             name = query.value(0)
             line_count = query.value(1)
@@ -771,7 +769,7 @@ class MainWindow(QMainWindow):
                                  f"group by chapter_status")
         self.lastquery = novelProgressionQuery
         query = QSqlQuery(db=self.con)
-        query.exec_(novelProgressionQuery)
+        query.exec(novelProgressionQuery)
         while query.next():
             name = query.value(0)
             count = query.value(1)
@@ -793,7 +791,7 @@ class MainWindow(QMainWindow):
         if statusChapter:
             if statusChapter != "complete":
                 self.model_chapter.setData(self.model_chapter.index(self.ui.cb_chapter.currentIndex(), 3), f"WIP",
-                                           Qt.EditRole)
+                                           Qt.ItemDataRole.EditRole)
 
         self.populate_tv_lines()
         self.progressionChapter()
@@ -835,7 +833,7 @@ class MainWindow(QMainWindow):
         for model_index in self.LselectedRows:
             r = self.model_lines.record()
             for z in range(self.model_lines.columnCount()):
-                data = self.model_lines.data(self.model_lines.index(model_index.row(), z), Qt.DisplayRole)
+                data = self.model_lines.data(self.model_lines.index(model_index.row(), z), Qt.ItemDataRole.DisplayRole)
                 Hname = self.model_lines.record().fieldName(z)
                 if z == 1:
                     data = round(data + .1, 1)
@@ -861,7 +859,7 @@ class MainWindow(QMainWindow):
     def pause_worker(self):
         """pause worker only if user can edit line
      (line edit available only to admin and moderator user)"""
-        if self.user_computer in self.admin_mod_user:
+        if self.is_admin:
             self.workerSave.Pause()
 
     def comboboxChanged(self):
@@ -929,9 +927,9 @@ class MainWindow(QMainWindow):
             infomessagebox = QMessageBox(self)
             infomessagebox.setWindowTitle(f"{appname} - autoSave")
             infomessagebox.setText("auto save and sync please wait")
-            infomessagebox.setStandardButtons(QMessageBox.NoButton)
+            infomessagebox.setStandardButtons(QMessageBox.StandardButton.NoButton)
             infomessagebox.open()
-            qApp.processEvents()
+            self.app.processEvents()
             self.model_lines.submitAll()
             self.model_lines.select()
             self.status_change_chapter(Statusstate="WIP")
@@ -956,8 +954,8 @@ class MainWindow(QMainWindow):
             # print(str(e))
             QMessageBox.information(self, "IO error", str(e), )
 
-        self.settings.setValue('lastNovel',self.ui.cb_novel.currentText())
-        self.settings.setValue('lastChapter',self.ui.cb_chapter.currentText())
+        self.settings.setValue('lastNovel', self.ui.cb_novel.currentText())
+        self.settings.setValue('lastChapter', self.ui.cb_chapter.currentText())
         self.settings.setValue('geometry', self.saveGeometry())
         self.settings.setValue('windowState', self.saveState())
         self.workerSave.stopE()

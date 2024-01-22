@@ -4,7 +4,7 @@ from pprint import pprint
 
 import numpy as np
 import pandas as pd
-from PyQt5.QtSql import QSqlQuery
+from PyQt6.QtSql import QSqlQuery
 from matplotlib import pyplot as plt
 import plotly.express as px
 

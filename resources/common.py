@@ -7,8 +7,8 @@ import shutil
 import socket
 
 import pyperclip
-from PyQt5.QtSql import QSqlQuery
-from PyQt5.QtWidgets import QMessageBox
+from PyQt6.QtSql import QSqlQuery
+from PyQt6.QtWidgets import QMessageBox
 
 appname = "Characters Voice Selector"
 last_query = ""
@@ -23,7 +23,7 @@ def banned_user(con):
     banned_query = QSqlQuery(db=con)
     banned_query_text = f"select ban_name from ban_user"
 
-    banned_query.exec_(banned_query_text)
+    banned_query.exec(banned_query_text)
     while banned_query.next():
         banned_user.append(banned_query.value(0))
     comp_user = getpass.getuser()
@@ -47,13 +47,13 @@ def admin_user(con, user_computer):
 
     query1 = QSqlQuery(db=con)
     admin_query_text = "select admin_name from admin_user"
-    query1.exec_(admin_query_text)
+    query1.exec(admin_query_text)
     while query1.next():
         admin_user.append(query1.value(0))
 
     query2 = QSqlQuery(db=con)
     mod_query_text = f"select mod_name from mod_user"
-    query2.exec_(mod_query_text)
+    query2.exec(mod_query_text)
     while query2.next():
         mod_user.append(query2.value(0))
     admin_mod_user = admin_user + mod_user

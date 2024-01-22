@@ -9,13 +9,13 @@ import time
 
 import pyperclip
 import qdarkstyle
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMessageBox
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QMessageBox
 from qasync import QEventLoop, QApplication
 
 from resources import database_op
 
-os.system("pyuic5 -o ui/MainWindowUI.py ui/MainWindow.ui")
+os.system("pyuic6 -o ui/MainWindowUI.py ui/MainWindow.ui")
 # os.system("pyuic5 -o ui/MainWindowUI2.py ui/MainWindow2.ui")
 
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
             msg.setInformativeText(f"Available drivers {con.drivers()}")
             msg.setWindowTitle("error")
             msg.setDetailedText("you probably need to add postgres V14 \n then go here https://www.pythonguis.com/faq/postgres-pyqt5-windows-driver-not-loaded/ the command hase been pasted in your clip board (you need to be admin)")
-            msg.exec_()
+            msg.exec()
             print("Available drivers", con.drivers())
             print(con.lastError().text())
             print("you probably need to add postgres V14 \n then go here https://www.pythonguis.com/faq/postgres-pyqt5-windows-driver-not-loaded/ the command hase been pasted in your clip board (you need to be admin)")

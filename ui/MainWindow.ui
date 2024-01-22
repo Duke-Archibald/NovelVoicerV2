@@ -166,7 +166,6 @@
        <widget class="QLabel" name="l_character_name">
         <property name="font">
          <font>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -206,12 +205,9 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QDockWidgetTEST" name="dw_characters">
+  <widget class="QDockWidget" name="dw_characters">
    <property name="floating">
     <bool>false</bool>
-   </property>
-   <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
     <string>Characters</string>
@@ -234,12 +230,9 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidgetTEST" name="dw_stats">
+  <widget class="QDockWidget" name="dw_stats">
    <property name="floating">
     <bool>false</bool>
-   </property>
-   <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="allowedAreas">
     <set>Qt::AllDockWidgetAreas</set>
@@ -273,7 +266,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidgetTEST" name="dw_progression">
+  <widget class="QDockWidget" name="dw_progression">
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -330,7 +323,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidgetTEST" name="dw_info">
+  <widget class="QDockWidget" name="dw_info">
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -462,12 +455,9 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidgetTEST" name="dw_tts">
+  <widget class="QDockWidget" name="dw_tts">
    <property name="floating">
     <bool>false</bool>
-   </property>
-   <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="windowTitle">
     <string>Text-To-Speech</string>
@@ -507,7 +497,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QDockWidgetTEST" name="dw_char_mods">
+  <widget class="QDockWidget" name="dw_char_mods">
    <property name="floating">
     <bool>true</bool>
    </property>
@@ -783,12 +773,6 @@
    <class>QTableViewP</class>
    <extends>QTableView</extends>
    <header>qtableviewp.h</header>
-  </customwidget>
-  <customwidget>
-   <class>QDockWidgetTEST</class>
-   <extends>QDockWidget</extends>
-   <header>qdockwidgettest.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
